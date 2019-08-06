@@ -102,6 +102,14 @@
 /********************* A list of currently supported modules ******************/
 /******************************************************************************/
 
+#ifndef LOG_CONF_LEVEL_SDN
+#define LOG_CONF_LEVEL_SDN                         LOG_LEVEL_NONE
+#endif /* LOG_CONF_LEVEL_SDN */
+
+#ifndef LOG_CONF_LEVEL_ATOM
+#define LOG_CONF_LEVEL_ATOM                        LOG_LEVEL_NONE
+#endif /* LOG_CONF_LEVEL_ATOM */
+
 #ifndef LOG_CONF_LEVEL_RPL
 #define LOG_CONF_LEVEL_RPL                         LOG_LEVEL_NONE /* Only for rpl-lite */
 #endif /* LOG_CONF_LEVEL_RPL */

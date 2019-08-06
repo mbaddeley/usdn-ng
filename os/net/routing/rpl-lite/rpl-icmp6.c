@@ -49,6 +49,14 @@
 #include "net/packetbuf.h"
 #include "lib/random.h"
 
+#if UIP_CONF_IPV6_SDN
+#include "net/sdn/sdn.h"
+#if BUILD_WITH_ATOM
+#include "atom.h"
+#endif
+#endif
+
+
 #include <limits.h>
 
 /* Log configuration */
@@ -532,6 +540,16 @@ dao_input(void)
   LOG_INFO_(", prefix length %u, parent ", dao.prefixlen);
   LOG_INFO_6ADDR(&dao.parent_addr);
   LOG_INFO_(" \n");
+
+#if UIP_CONF_IPV6_SDN && BUILD_WITH_ATOM
+  LOG_INFO("Posting DAO to ATOM\n");
+  // HACK: Make sure we only join once
+  if(!rpl_sdn_dao_received[UIP_IP_BUF->srcipaddr.u8[15]]) {
+    LOG_STAT("n:%d dao:1\n", dao.prefix.u8[15]);
+    rpl_sdn_dao_received[dao.prefix.u8[15]] = 1;
+    atom_post(&sb_rpl);
+  }
+#endif /* UIP_CONF_IPV6_SDN */
 
   rpl_process_dao(&from, &dao);
 

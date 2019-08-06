@@ -90,6 +90,11 @@
 #define LOG_MODULE "IPv6"
 #define LOG_LEVEL LOG_LEVEL_IPV6
 
+#if UIP_CONF_IPV6_SDN
+#include "sdn.h"
+#include "sdn-cd.h"
+#endif /* UIP_CONF_IPV6_SDN */
+
 #if UIP_STATISTICS == 1
 struct uip_stats uip_stat;
 #endif /* UIP_STATISTICS == 1 */
@@ -1212,6 +1217,33 @@ uip_process(uint8_t flag)
                     ext_hdr_options_process) and discard */
     }
   }
+
+#if UIP_CONF_IPV6_SDN
+  /* Explicitly don't check some messages */
+  LOG_DBG("uip6: Next header is %d\n", *next_header);
+  if(*next_header != UIP_PROTO_ROUTING &&
+      *next_header != UIP_PROTO_ICMP6 &&
+      !uip_ds6_is_my_addr(&UIP_IP_BUF->destipaddr) &&
+      !uip_ipaddr_cmp(&UIP_IP_BUF->destipaddr, &DEFAULT_CONTROLLER->ipaddr) &&
+      !uip_ds6_is_my_maddr(&UIP_IP_BUF->destipaddr)) {
+    LOG_DBG("uip6: Checking SDN\n");
+    /* Process packets according to the SDN flowtable */
+    uint8_t result = SDN_DRIVER.process(SDN_UIP);
+    switch(result) {
+      case UIP_DROP:
+        LOG_DBG("uip6: dropped\n");
+        goto drop; /* Don't deliver up the stack. Clear the uip buf */
+      case UIP_ACCEPT:
+        LOG_DBG("uip6: continue\n");
+        break;     /* Continue processing as normal */
+      default:
+        LOG_ERR("uip6: Unknown return value!\n");
+        return;    /* Return to calling process and don't clear the buf */
+    }
+  } else {
+    LOG_WARN("uip6: Bypassing SDN\n");
+  }
+#endif /* UIP_CONF_IPV6_SDN */
 
   /*
    * Process Packets with a routable multicast destination:
