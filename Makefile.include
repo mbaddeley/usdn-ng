@@ -214,6 +214,7 @@ MAKE_SDN_USDN = 1
 ifeq ($(MAKE_SDN),MAKE_SDN_USDN)
   CFLAGS += -DUIP_CONF_IPV6_SDN=1
   CFLAGS += -DSDN_CONF_WITH_USDN=1
+  MODULES += os/net/sdn
   MODULES += os/net/sdn/usdn
 else
   CFLAGS += -DUIP_CONF_IPV6_SDN=0

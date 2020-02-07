@@ -89,6 +89,6 @@
 /*---------------------------------------------------------------------------*/
 /* Logging Levels */
 /*---------------------------------------------------------------------------*/
-#define LOG_CONF_LEVEL_MAIN                LOG_LEVEL_NONE
+#define LOG_CONF_LEVEL_MAIN                LOG_LEVEL_INFO
 
 #endif /* PROJECT_CONF_H_ */

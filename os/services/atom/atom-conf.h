@@ -60,7 +60,7 @@
 #ifdef ATOM_CONF_MAX_NODES
 #define ATOM_MAX_NODES           ATOM_CONF_MAX_NODES
 #else
-#define ATOM_MAX_NODES           42
+#define ATOM_MAX_NODES           20
 #endif
 
 /*---------------------------------------------------------------------------*/
