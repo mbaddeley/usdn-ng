@@ -62,8 +62,9 @@
 #define LOG_LEVEL_NONE         0 /* No log */
 #define LOG_LEVEL_ERR          1 /* Errors */
 #define LOG_LEVEL_WARN         2 /* Warnings */
-#define LOG_LEVEL_INFO         3 /* Basic info */
-#define LOG_LEVEL_DBG          4 /* Detailled debug */
+#define LOG_LEVEL_STAT         3 /* Statistics */
+#define LOG_LEVEL_INFO         4 /* Basic info */
+#define LOG_LEVEL_DBG          5 /* Detailled debug */
 
 /* Per-module log level */
 
@@ -73,6 +74,8 @@ struct log_module {
   int max_log_level;
 };
 
+extern int curr_log_level_sdn;
+extern int curr_log_level_atom;
 extern int curr_log_level_rpl;
 extern int curr_log_level_tcpip;
 extern int curr_log_level_ipv6;
@@ -88,6 +91,8 @@ extern int curr_log_level_main;
 
 extern struct log_module all_modules[];
 
+#define LOG_LEVEL_SDN                         MIN((LOG_CONF_LEVEL_SDN), curr_log_level_sdn)
+#define LOG_LEVEL_ATOM                        MIN((LOG_CONF_LEVEL_ATOM), curr_log_level_atom)
 #define LOG_LEVEL_RPL                         MIN((LOG_CONF_LEVEL_RPL), curr_log_level_rpl)
 #define LOG_LEVEL_TCPIP                       MIN((LOG_CONF_LEVEL_TCPIP), curr_log_level_tcpip)
 #define LOG_LEVEL_IPV6                        MIN((LOG_CONF_LEVEL_IPV6), curr_log_level_ipv6)
@@ -150,24 +155,28 @@ extern struct log_module all_modules[];
 #define LOG_PRINT(...)         LOG(1, 0, "PRI", __VA_ARGS__)
 #define LOG_ERR(...)           LOG(1, LOG_LEVEL_ERR, "ERR", __VA_ARGS__)
 #define LOG_WARN(...)          LOG(1, LOG_LEVEL_WARN, "WARN", __VA_ARGS__)
+#define LOG_STAT(...)          LOG(1, LOG_LEVEL_STAT, "STAT", __VA_ARGS__)
 #define LOG_INFO(...)          LOG(1, LOG_LEVEL_INFO, "INFO", __VA_ARGS__)
 #define LOG_DBG(...)           LOG(1, LOG_LEVEL_DBG, "DBG", __VA_ARGS__)
 
 #define LOG_PRINT_(...)         LOG(0, 0, "PRI", __VA_ARGS__)
 #define LOG_ERR_(...)           LOG(0, LOG_LEVEL_ERR, "ERR", __VA_ARGS__)
 #define LOG_WARN_(...)          LOG(0, LOG_LEVEL_WARN, "WARN", __VA_ARGS__)
+#define LOG_STAT_(...)          LOG(0, LOG_LEVEL_STAT, "STAT", __VA_ARGS__)
 #define LOG_INFO_(...)          LOG(0, LOG_LEVEL_INFO, "INFO", __VA_ARGS__)
 #define LOG_DBG_(...)           LOG(0, LOG_LEVEL_DBG, "DBG", __VA_ARGS__)
 
 #define LOG_PRINT_LLADDR(...)  LOG_LLADDR(0, __VA_ARGS__)
 #define LOG_ERR_LLADDR(...)    LOG_LLADDR(LOG_LEVEL_ERR, __VA_ARGS__)
 #define LOG_WARN_LLADDR(...)   LOG_LLADDR(LOG_LEVEL_WARN, __VA_ARGS__)
+#define LOG_STAT_LLADDR(...)   LOG_LLADDR(LOG_LEVEL_STAT, __VA_ARGS__)
 #define LOG_INFO_LLADDR(...)   LOG_LLADDR(LOG_LEVEL_INFO, __VA_ARGS__)
 #define LOG_DBG_LLADDR(...)    LOG_LLADDR(LOG_LEVEL_DBG, __VA_ARGS__)
 
 #define LOG_PRINT_6ADDR(...)   LOG_6ADDR(0, __VA_ARGS__)
 #define LOG_ERR_6ADDR(...)     LOG_6ADDR(LOG_LEVEL_ERR, __VA_ARGS__)
 #define LOG_WARN_6ADDR(...)    LOG_6ADDR(LOG_LEVEL_WARN, __VA_ARGS__)
+#define LOG_STAT_6ADDR(...)    LOG_6ADDR(LOG_LEVEL_STAT, __VA_ARGS__)
 #define LOG_INFO_6ADDR(...)    LOG_6ADDR(LOG_LEVEL_INFO, __VA_ARGS__)
 #define LOG_DBG_6ADDR(...)     LOG_6ADDR(LOG_LEVEL_DBG, __VA_ARGS__)
 
@@ -179,6 +188,7 @@ extern struct log_module all_modules[];
    for low enough log levels configurations. */
 #define LOG_ERR_ENABLED        ((LOG_LEVEL) >= LOG_LEVEL_ERR)
 #define LOG_WARN_ENABLED       ((LOG_LEVEL) >= LOG_LEVEL_WARN)
+#define LOG_STAT_ENABLED       ((LOG_LEVEL) >= LOG_LEVEL_STAT)
 #define LOG_INFO_ENABLED       ((LOG_LEVEL) >= LOG_LEVEL_INFO)
 #define LOG_DBG_ENABLED        ((LOG_LEVEL) >= LOG_LEVEL_DBG)
 

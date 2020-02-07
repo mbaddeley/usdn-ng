@@ -140,6 +140,8 @@
 
 ##### "ENERGEST_CONF_ON": ______________________ == ENERGEST_CONF_ON
 
+##### "LOG_CONF_LEVEL_SDN": ____________________ == LOG_CONF_LEVEL_SDN
+##### "LOG_CONF_LEVEL_ATOM": ___________________ == LOG_CONF_LEVEL_ATOM
 ##### "LOG_CONF_LEVEL_RPL": ____________________ == LOG_CONF_LEVEL_RPL
 ##### "LOG_CONF_LEVEL_TCPIP": __________________ == LOG_CONF_LEVEL_TCPIP
 ##### "LOG_CONF_LEVEL_IPV6": ___________________ == LOG_CONF_LEVEL_IPV6

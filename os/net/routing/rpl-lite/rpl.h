@@ -149,4 +149,15 @@ void rpl_set_leaf_only(uint8_t value);
 uint8_t rpl_get_leaf_only(void);
  /** @} */
 
+extern uint8_t rpl_sdn_dao_received[50];
+
+#if UIP_CONF_IPV6_SDN
+/**
+ * RPL SDN functionality.
+ */
+typedef void (* rpl_sdn_dag_joined_callback_t)(void);
+void register_dag_joined_callback(rpl_sdn_dag_joined_callback_t callback);
+// void rpl_sdn_set_instance_properties(uint8_t dio_interval, uint8_t dfrt_lifetime);
+#endif /* UIP_CONF_IPV6_SDN */
+
 #endif /* RPL_H */

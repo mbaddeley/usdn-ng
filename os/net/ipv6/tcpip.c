@@ -48,6 +48,13 @@
 #include "net/linkaddr.h"
 #include "net/routing/routing.h"
 
+#if UIP_CONF_IPV6_SDN
+#include "net/sdn/sdn-cd.h"
+#if BUILD_WITH_ATOM
+#include "atom.h"
+#endif
+#endif
+
 #include <string.h>
 
 /* Log configuration */
@@ -469,6 +476,10 @@ output_fallback(void)
     tcpip_ipv6_output();
     return;
   }
+#if UIP_CONF_IPV6_SDN
+  LOG_ERR("fallback: Fallback is controller (me)\n");
+}
+#endif
 #else
   LOG_ERR("output: destination off-link and no default route\n");
 #endif /* !UIP_FALLBACK_INTERFACE */
@@ -649,6 +660,14 @@ tcpip_ipv6_output(void)
     goto exit;
   }
 
+#if UIP_CONF_IPV6_SDN && BUILD_WITH_ATOM
+  if(sdn_is_ctrl_addr(&UIP_IP_BUF->destipaddr)) {
+    LOG_DBG("output: Posting to ATOM\n");
+    atom_post(&sb_usdn);
+    uipbuf_clear();
+    goto exit;
+  }
+#endif /* UIP_CONF_IPV6_SDN */
 
   if(!NETSTACK_ROUTING.ext_header_update()) {
     /* Packet can not be forwarded */

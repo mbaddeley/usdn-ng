@@ -1,0 +1,4 @@
+print-%:
+	@echo '$*=$($*)'
+
+CFLAGS += -DBUILD_WITH_ATOM=1
