@@ -63,7 +63,12 @@
 #define UIP_IPUDPH_LEN (UIP_UDPH_LEN + UIP_IPH_LEN)   /* Size of IP + UDP header */
 #define UIP_IPTCPH_LEN (UIP_TCPH_LEN + UIP_IPH_LEN)   /* Size of IP + TCP header */
 
+#define uip_l3_hdr_len (UIP_IPH_LEN + uip_ext_len)
+#define uip_l2_l3_hdr_len uip_l3_hdr_len
+
 #define uip_l3_icmp_hdr_len (UIP_IPH_LEN + uip_ext_len + UIP_ICMPH_LEN)
+#define uip_l2_l3_icmp_hdr_len uip_l3_icmp_hdr_len
+
 
 /**
  * Direct access to IPv6 header

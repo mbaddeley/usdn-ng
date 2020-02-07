@@ -53,6 +53,8 @@
 #include "net/ipv6/uiplib.h"
 #include "deployment/deployment.h"
 
+int curr_log_level_sdn = LOG_CONF_LEVEL_SDN;
+int curr_log_level_atom = LOG_CONF_LEVEL_ATOM;
 int curr_log_level_rpl = LOG_CONF_LEVEL_RPL;
 int curr_log_level_tcpip = LOG_CONF_LEVEL_TCPIP;
 int curr_log_level_ipv6 = LOG_CONF_LEVEL_IPV6;
@@ -67,6 +69,8 @@ int curr_log_level_lwm2m = LOG_CONF_LEVEL_LWM2M;
 int curr_log_level_main = LOG_CONF_LEVEL_MAIN;
 
 struct log_module all_modules[] = {
+  {"sdn", &curr_log_level_sdn, LOG_CONF_LEVEL_SDN},
+  {"atom", &curr_log_level_atom, LOG_CONF_LEVEL_ATOM},
   {"rpl", &curr_log_level_rpl, LOG_CONF_LEVEL_RPL},
   {"tcpip", &curr_log_level_tcpip, LOG_CONF_LEVEL_TCPIP},
   {"ipv6", &curr_log_level_ipv6, LOG_CONF_LEVEL_IPV6},
@@ -200,6 +204,8 @@ log_level_to_str(int level)
       return "Errors";
     case LOG_LEVEL_WARN:
       return "Warnings";
+    case LOG_LEVEL_STAT:
+      return "Stats";
     case LOG_LEVEL_INFO:
       return "Info";
     case LOG_LEVEL_DBG:
