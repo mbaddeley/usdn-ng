@@ -1,6 +1,9 @@
 μSDN-NG - Low-Power Wireless SDN for Contiki-NG.
 ===
 
+WARNING - This repo has some issues at compilation that I still have't fixed yet... I recommend you use the original μSDN repo [here](https://github.com/mbaddeley/usdn) unless you know what you are doing with Contiki-NG. 
+===
+
 Intro
 ---
 This repo hosts the source code of μSDN-NG, a Contiki-NG port of the orginal μSDN [here](https://github.com/mbaddeley/usdn) ([paper](https://michaelbaddeley.files.wordpress.com/2019/05/evolving.pdf) | [slides](https://michaelbaddeley.files.wordpress.com/2020/03/netsoft-2018-slides.pdf)). *DISCLAIMER: This port has not been properly tested. However, I'm happy to help out if you have issues!*
@@ -217,4 +220,4 @@ Where is everything?
 ---
 [usdn_v1.0] - 28/06/18
 ---
-- Initial commit.
+- Initial commit. 
