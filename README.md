@@ -94,7 +94,22 @@ e.g.:
 
 Simulation in Cooja
 ---
-Contiki-NG uses docker for Cooja. To learn how to install docker and run Cooja for NG, please refer to this guide [here](https://github.com/contiki-ng/contiki-ng/wiki/Docker)
+Contiki-NG uses docker for Cooja. To learn how to install docker and run Cooja for NG, please refer to this guide [here](https://github.com/contiki-ng/contiki-ng/wiki/Docker).
+
+*Important:* Rather than cloning vanilla Contiki-NG (as it asks you to) you will clone uSDN-NG i.e.:
+
+```
+$ git clone https://github.com/mbaddeley/usdn-ng.git
+$ cd usdn-ng
+$ git submodule update --init --recursive
+```
+
+and in your `~/.bashrc`
+
+```
+export USDN_PATH=<absolute-path-to-your-usdn-ng>
+alias usdner="docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 --mount type=bind,source=$USDN_PATH,destination=/home/user/contiki-ng -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v /dev/bus/usb:/dev/bus/usb -ti contiker/contiki-ng"
+```
 
 Real-Hardware
 ---
@@ -154,7 +169,7 @@ Where is everything?
 ### Stack
 - usdn-driver.c
 
-  The driver interfaces with the flowtable to provide a basic API to allow specific functions, such as fowarding packets based on source/destination, aggregating packets, dropping packets, etc.
+  The driver interfaces with the flowtable to provide a basic API to allow specific functions, such as forwarding packets based on source/destination, aggregating packets, dropping packets, etc.
 
 - usdn-engine.c
 
