@@ -8,6 +8,7 @@ endif
 
 CC       = arm-none-eabi-gcc
 CPP      = arm-none-eabi-cpp
+CXX      = arm-none-eabi-g++
 LD       = arm-none-eabi-gcc
 AR       = arm-none-eabi-ar
 AS       = arm-none-eabi-gcc
@@ -35,13 +36,20 @@ LDFLAGS += -mthumb -mlittle-endian
 
 OBJDUMP_FLAGS += --disassemble --source --disassembler-options=force-thumb
 
+### Caller can override the default compiler optimization levels
+ifndef OPTIMIZATIONS
+
 ### Are we building with code size optimisations?
 SMALL ?= 1
 ifeq ($(SMALL),1)
-  CFLAGS += -Os
+  OPTIMIZATIONS = -Os
 else
-  CFLAGS += -O2
+  OPTIMIZATIONS = -O2
 endif
+
+endif
+
+CFLAGS += $(OPTIMIZATIONS)
 
 ### Use CMSIS from arch/cpu/arm/common
 CONTIKI_ARM_DIRS += . 

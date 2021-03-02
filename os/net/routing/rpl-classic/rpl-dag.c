@@ -1029,6 +1029,9 @@ rpl_get_any_dag_with_parent(bool requires_parent)
 int
 rpl_has_joined(void)
 {
+  if(rpl_dag_root_is_root()) {
+    return 1;
+  }
   return rpl_get_any_dag_with_parent(true) != NULL;
 }
 /*---------------------------------------------------------------------------*/
@@ -1610,7 +1613,7 @@ rpl_process_dio(uip_ipaddr_t *from, rpl_dio_t *dio)
     }
   } else {
     if(p->rank == dio->rank) {
-      LOG_WARN("Received consistent DIO\n");
+      LOG_INFO("Received consistent DIO\n");
       if(dag->joined) {
         instance->dio_counter++;
       }

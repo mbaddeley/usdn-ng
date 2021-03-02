@@ -149,8 +149,9 @@ static rtimer_clock_t volatile current_slot_start;
 /* Are we currently inside a slot? */
 static volatile int tsch_in_slot_operation = 0;
 
-/* If we are inside a slot, this tells the current channel */
+/* If we are inside a slot, these tell the current channel and channel offset */
 uint8_t tsch_current_channel;
+uint8_t tsch_current_channel_offset;
 
 /* Info about the link, packet and neighbor of
  * the current (or next) slot */
@@ -236,20 +237,34 @@ tsch_release_lock(void)
 /*---------------------------------------------------------------------------*/
 /* Channel hopping utility functions */
 
-/* Return channel from ASN and channel offset */
-uint8_t
-tsch_calculate_channel(struct tsch_asn_t *asn, uint16_t channel_offset, struct tsch_packet *p)
+/* Return the channel offset to use for the current slot */
+static uint8_t
+tsch_get_channel_offset(struct tsch_link *link, struct tsch_packet *p)
 {
-  uint16_t index_of_0, index_of_offset;
 #if TSCH_WITH_LINK_SELECTOR
   if(p != NULL) {
     uint16_t packet_channel_offset = queuebuf_attr(p->qb, PACKETBUF_ATTR_TSCH_CHANNEL_OFFSET);
     if(packet_channel_offset != 0xffff) {
       /* The schedule specifies a channel offset for this one; use it */
-      channel_offset = packet_channel_offset;
+      return packet_channel_offset;
     }
   }
 #endif
+  return link->channel_offset;
+}
+
+/**
+ * Returns a 802.15.4 channel from an ASN and channel offset. Basically adds
+ * The offset to the ASN and performs a hopping sequence lookup.
+ *
+ * \param asn A given ASN
+ * \param channel_offset Given channel offset
+ * \return The resulting channel
+ */
+static uint8_t
+tsch_calculate_channel(struct tsch_asn_t *asn, uint16_t channel_offset)
+{
+  uint16_t index_of_0, index_of_offset;
   index_of_0 = TSCH_ASN_MOD(*asn, tsch_hopping_sequence_length);
   index_of_offset = (index_of_0 + channel_offset) % tsch_hopping_sequence_length.val;
   return tsch_hopping_sequence[index_of_offset];
@@ -354,6 +369,17 @@ get_packet_and_neighbor_for_link(struct tsch_link *link, struct tsch_neighbor **
   }
 
   return p;
+}
+/*---------------------------------------------------------------------------*/
+static
+void update_link_backoff(struct tsch_link *link) {
+  if(link != NULL
+      && (link->link_options & LINK_OPTION_TX)
+      && (link->link_options & LINK_OPTION_SHARED)) {
+    /* Decrement the backoff window for all neighbors able to transmit over
+     * this Tx, Shared link. */
+    tsch_queue_update_all_backoff_windows(&link->addr);
+  }
 }
 /*---------------------------------------------------------------------------*/
 uint64_t
@@ -506,7 +532,7 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
       burst_link_requested = 0;
       if(do_wait_for_ack
              && tsch_current_burst_count + 1 < TSCH_BURST_MAX_LEN
-             && tsch_queue_packet_count(&current_neighbor->addr) > 1) {
+             && tsch_queue_nbr_packet_count(current_neighbor) > 1) {
         burst_link_requested = 1;
         tsch_packet_set_frame_pending(packet, packet_len);
       }
@@ -623,7 +649,7 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
 #if LLSEC802154_ENABLED
                 if(ack_len != 0) {
                   if(!tsch_security_parse_frame(ackbuf, ack_hdrlen, ack_len - ack_hdrlen - tsch_security_mic_len(&frame),
-                      &frame, &current_neighbor->addr, &tsch_current_asn)) {
+                      &frame, tsch_queue_get_nbr_address(current_neighbor), &tsch_current_asn)) {
                     TSCH_LOG_ADD(tsch_log_message,
                         snprintf(log->message, sizeof(log->message),
                         "!failed to authenticate ACK"));
@@ -779,7 +805,7 @@ PT_THREAD(tsch_rx_slot(struct pt *pt, struct rtimer *t))
     packet_seen = NETSTACK_RADIO.receiving_packet() || NETSTACK_RADIO.pending_packet();
     if(!packet_seen) {
       /* Check if receiving within guard time */
-      RTIMER_BUSYWAIT_UNTIL_ABS((packet_seen = NETSTACK_RADIO.receiving_packet()),
+      RTIMER_BUSYWAIT_UNTIL_ABS((packet_seen = (NETSTACK_RADIO.receiving_packet() || NETSTACK_RADIO.pending_packet())),
           current_slot_start, tsch_timing[tsch_ts_rx_offset] + tsch_timing[tsch_ts_rx_wait] + RADIO_DELAY_BEFORE_DETECT);
     }
     if(!packet_seen) {
@@ -1009,9 +1035,21 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
       is_drift_correction_used = 0;
       /* Get a packet ready to be sent */
       current_packet = get_packet_and_neighbor_for_link(current_link, &current_neighbor);
-      /* There is no packet to send, and this link does not have Rx flag. Instead of doing
-       * nothing, switch to the backup link (has Rx flag) if any. */
-      if(current_packet == NULL && !(current_link->link_options & LINK_OPTION_RX) && backup_link != NULL) {
+      uint8_t do_skip_best_link = 0;
+      if(current_packet == NULL && backup_link != NULL) {
+        /* There is no packet to send, and this link does not have Rx flag. Instead of doing
+         * nothing, switch to the backup link (has Rx flag) if any
+         * and if the current link cannot Rx or both links can Rx, but the backup link has priority. */
+        if(!(current_link->link_options & LINK_OPTION_RX)
+            || backup_link->slotframe_handle < current_link->slotframe_handle) {
+          do_skip_best_link = 1;
+        }
+      }
+
+      if(do_skip_best_link) {
+        /* skipped a Tx link, refresh its backoff */
+        update_link_backoff(current_link);
+
         current_link = backup_link;
         current_packet = get_packet_and_neighbor_for_link(current_link, &current_neighbor);
       }
@@ -1024,8 +1062,8 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
           burst_link_scheduled = 0;
         } else {
           /* Hop channel */
-          tsch_current_channel = tsch_calculate_channel(&tsch_current_asn,
-              current_link->channel_offset, current_packet);
+          tsch_current_channel_offset = tsch_get_channel_offset(current_link, current_packet);
+          tsch_current_channel = tsch_calculate_channel(&tsch_current_asn, tsch_current_channel_offset);
         }
         NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, tsch_current_channel);
         /* Turn the radio on already here if configured so; necessary for radios with slow startup */
@@ -1080,13 +1118,7 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
       rtimer_clock_t time_to_next_active_slot;
       /* Schedule next wakeup skipping slots if missed deadline */
       do {
-        if(current_link != NULL
-            && current_link->link_options & LINK_OPTION_TX
-            && current_link->link_options & LINK_OPTION_SHARED) {
-          /* Decrement the backoff window for all neighbors able to transmit over
-           * this Tx, Shared link. */
-          tsch_queue_update_all_backoff_windows(&current_link->addr);
-        }
+        update_link_backoff(current_link);
 
         /* A burst link was scheduled. Replay the current link at the
         next time offset */
@@ -1151,6 +1183,8 @@ tsch_slot_operation_start(void)
     TSCH_ASN_INC(tsch_current_asn, timeslot_diff);
     /* Time to next wake up */
     time_to_next_active_slot = timeslot_diff * tsch_timing[tsch_ts_timeslot_length];
+    /* Compensate for the base drift */
+    time_to_next_active_slot += tsch_timesync_adaptive_compensate(time_to_next_active_slot);
     /* Update current slot start */
     prev_slot_start = current_slot_start;
     current_slot_start += time_to_next_active_slot;

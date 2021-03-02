@@ -16,7 +16,7 @@
 #endif /* NETSTACK_CONF_RADIO */
 
 /* Symbol for the TSCH 15ms timeslot timing template */
-#define TSCH_CONF_ARCH_HDR_PATH "dev/cc2420/cc2420-tsch-15ms.h"
+#define TSCH_CONF_ARCH_HDR_PATH "dev/radio/cc2420/cc2420-tsch-15ms.h"
 
 /* The TSCH default slot length of 10ms is a bit too short for this platform,
  * use 15ms instead. */
@@ -38,19 +38,18 @@
 /* This does not work in Cooja. */
 #define UART0_CONF_RX_WITH_DMA       0
 
-/* Handle 10 neighbors */
+/* Handle 8 neighbors */
 #ifndef NBR_TABLE_CONF_MAX_NEIGHBORS
-#define NBR_TABLE_CONF_MAX_NEIGHBORS    10
+#define NBR_TABLE_CONF_MAX_NEIGHBORS    8
 #endif
 
-/* Handle 10 routes    */
+/* Handle 8 routes    */
 #ifndef NETSTACK_MAX_ROUTE_ENTRIES
-#define NETSTACK_MAX_ROUTE_ENTRIES      10
+#define NETSTACK_MAX_ROUTE_ENTRIES      8
 #endif
 
-/* Handle 10 links    */
-#ifndef TSCH_SCHEDULE_CONF_MAX_LINKS
-#define TSCH_SCHEDULE_CONF_MAX_LINKS    10
+#ifndef UIP_CONF_UDP_CONNS
+#define UIP_CONF_UDP_CONNS 2
 #endif
 
 #ifndef TSCH_CONF_MAX_INCOMING_PACKETS
@@ -60,6 +59,12 @@
 #ifndef TSCH_QUEUE_CONF_NUM_PER_NEIGHBOR
 #define TSCH_QUEUE_CONF_NUM_PER_NEIGHBOR  4
 #endif
+
+#ifndef TSCH_LOG_CONF_QUEUE_LEN
+#define TSCH_LOG_CONF_QUEUE_LEN 4
+#endif
+
+#define TSCH_CONF_HW_FRAME_FILTERING 0
 
 /* Platform-specific (H/W) AES implementation */
 #ifndef AES_128_CONF

@@ -1,30 +1,44 @@
-FROM 32bit/ubuntu:16.04
+FROM i386/ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
+# Set user for what comes next
+USER root
+
 # Tools
+RUN apt-get -qq update && \
+    apt-get -qq -y --no-install-recommends install gnupg > /dev/null
+
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
-  echo "deb http://download.mono-project.com/repo/ubuntu xenial main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list && \
+  echo "deb http://download.mono-project.com/repo/ubuntu bionic main" | tee /etc/apt/sources.list.d/mono-xamarin.list && \
+  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 77B7346A59027B33C10CAFE35E64E954262C4500 && \
+  echo "deb http://ppa.launchpad.net/mosquitto-dev/mosquitto-ppa/ubuntu bionic main" | tee /etc/apt/sources.list.d/mosquitto.list && \
   apt-get -qq update && \
   apt-get -qq -y --no-install-recommends install \
     ant \
     build-essential \
-    default-jdk \
     doxygen \
     gdb \
     git \
-    gksu \
     gtk-sharp2 \
     iputils-tracepath \
+    iputils-ping \
     libcanberra-gtk-module:i386 \
+    libcoap-1-0-bin \
+    libfreetype6-dev \
     libgtk2.0-0 \
+    libpng-dev \
     mono-complete \
     mosquitto \
     mosquitto-clients \
-    npm \
+    net-tools \
+    openjdk-8-jdk \
+    python-dev \
     python-pip \
+    python3-pip \
     python-serial \
     rlwrap \
+    sudo \
     screen \
     srecord \
     uml-utilities \
@@ -37,14 +51,10 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E03280
     > /dev/null \
   && apt-get -qq clean
 
-# Install coap-cli
-RUN npm -q install coap-cli@0.5.1 -g \
-  && sudo ln -s /usr/bin/nodejs /usr/bin/node
-
 # Install ARM toolchain
-RUN wget -nv https://launchpad.net/gcc-arm-embedded/5.0/5-2015-q4-major/+download/gcc-arm-none-eabi-5_2-2015q4-20151219-linux.tar.bz2 && \
-  tar xjf gcc-arm-none-eabi-5_2-2015q4-20151219-linux.tar.bz2 -C /tmp/ && \
-  cp -f -r /tmp/gcc-arm-none-eabi-5_2-2015q4/* /usr/local/ && \
+RUN wget -nv https://github.com/Yagoor/gcc-arm-none-eabi/releases/download/9-2020-q2-update/gcc-arm-none-eabi-9-2020-q4-major-i386-linux.tar.bz2 && \
+  tar xjf gcc-arm-none-eabi-9-2020-q4-major-i386-linux.tar.bz2 -C /tmp/ && \
+  cp -f -r /tmp/gcc-arm-none-eabi-9-2020-q4-major/* /usr/local/ && \
   rm -rf /tmp/gcc-arm-none-eabi-* gcc-arm-none-eabi-*-linux.tar.bz2
 
 # Install msp430 toolchain
@@ -79,6 +89,9 @@ ENV NRF52_SDK_ROOT /usr/nrf52-sdk
 # readthedocs API documentation
 RUN pip -q install --upgrade pip
 RUN pip -q install setuptools && pip -q install sphinx_rtd_theme sphinx
+# Install matplotlib for result visualization
+RUN pip3 -q install --upgrade pip
+RUN pip3 -q install matplotlib
 
 # Create user, enable X forwarding, add to group dialout
 # -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix
@@ -95,7 +108,6 @@ RUN export uid=1000 gid=1000 && \
 USER user
 
 # Environment variables
-ENV JAVA_HOME           /usr/lib/jvm/default-java
 ENV HOME                /home/user
 ENV CONTIKI_NG          ${HOME}/contiki-ng
 ENV COOJA               ${CONTIKI_NG}/tools/cooja
@@ -105,6 +117,10 @@ WORKDIR                 ${HOME}
 # Create Cooja shortcut
 RUN echo "#!/bin/bash\nant -Dbasedir=${COOJA} -f ${COOJA}/build.xml run" > ${HOME}/cooja && \
   chmod +x ${HOME}/cooja
+
+# Make sure we're using Java 8 for Cooja
+RUN sudo update-java-alternatives --set /usr/lib/jvm/java-1.8.0-openjdk-i386
+ENV JAVA_HOME           /usr/lib/jvm/java-8-openjdk-i386/
 
 # Download, build and install Renode
 RUN git clone --quiet https://github.com/renode/renode.git \

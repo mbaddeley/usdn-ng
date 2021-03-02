@@ -128,15 +128,6 @@ typedef unsigned long clock_time_t;
 
 #define UIP_ARCH_IPCHKSUM        1
 
-#if MAC_CONF_WITH_TSCH
-/* A bug in cooja causes many EBs to be missed at scan. Increase EB
-   frequency to shorten the join process */
-#undef TSCH_CONF_EB_PERIOD
-#define TSCH_CONF_EB_PERIOD (4 * CLOCK_SECOND)
-#undef TSCH_CONF_MAX_EB_PERIOD
-#define TSCH_CONF_MAX_EB_PERIOD (4 * CLOCK_SECOND)
-#endif /* MAC_CONF_WITH_TSCH */
-
 #define CFS_CONF_OFFSET_TYPE	long
 
 #define PLATFORM_CONF_SUPPORTS_STACK_CHECK  0
@@ -157,6 +148,10 @@ typedef unsigned long clock_time_t;
 #define COOJA_BTN_PIN                    3
 
 #define BUTTON_HAL_CONF_DEBOUNCE_DURATION 0
+
+/* Notify various examples that we have Buttons */
+#define PLATFORM_HAS_BUTTON    1
+#define PLATFORM_SUPPORTS_BUTTON_HAL 1
 /*---------------------------------------------------------------------------*/
 /* Virtual LED colors */
 #define LEDS_CONF_COUNT                  3
