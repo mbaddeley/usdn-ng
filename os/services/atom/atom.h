@@ -158,7 +158,8 @@ typedef struct atom_join_action {
 #define ATOM_ACTION_BUFSIZE   255
 // FIXME: Temp pack this for a memory alignement issue. Might need to do
 //        something like uip_buf_aligned though.
-typedef struct __attribute__((__packed__)) atom_action  {
+// typedef struct __attribute__((__packed__)) atom_action  {
+typedef struct atom_action  {
   uint8_t               data[ATOM_ACTION_BUFSIZE];
   uint8_t               id;
   atom_action_type_t    type;

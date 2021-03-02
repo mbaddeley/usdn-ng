@@ -142,12 +142,20 @@ atom_init(uip_ipaddr_t *addr)
   /* Initialise network layer */
   atom_net_init();
 
+#if CONTIKI_TARGET_NATIVE
+  LOG_DBG("Initialising %ld atom sb connectors...\n", NUM_SB);
+#else
   LOG_DBG("Initialising %d atom sb connectors...\n", NUM_SB);
+#endif
   /* Initialize southbound connectors */
   for(i = 0; i < NUM_SB; i++) {
     all_sb[i]->init();
   }
+#if CONTIKI_TARGET_NATIVE
+  LOG_DBG("Initialising %ld atom apps...\n", NUM_APPS);
+#else
   LOG_DBG("Initialising %d atom apps...\n", NUM_APPS);
+#endif
   /* Initialize applications */
   for(i = 0; i < NUM_APPS; i++) {
     all_apps[i]->init();

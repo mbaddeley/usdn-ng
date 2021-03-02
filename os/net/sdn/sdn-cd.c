@@ -104,7 +104,7 @@ sdn_cd_add(uip_ipaddr_t *ipaddr)
   sdn_controller_t *c;
 
   for(c = list_head(controllerlist); c != NULL; c = list_item_next(c)) {
-    if(uip_ipaddr_cmp(&c->ipaddr, &ipaddr)) {
+    if(uip_ipaddr_cmp(&c->ipaddr, ipaddr)) {
       LOG_ERR("Controller already in list!\n");
       return NULL;
     }

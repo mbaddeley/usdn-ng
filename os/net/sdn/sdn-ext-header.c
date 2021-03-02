@@ -37,10 +37,9 @@
  */
 #include "net/ipv6/uip.h"
 #include "net/ipv6/uip-ds6.h"
-
 #include "net/routing/routing.h"
 #include "net/routing/rpl-classic/rpl-private.h"
-// #include "net/rpl/rpl-private.h"
+#include "net/packetbuf.h"
 
 #include "net/sdn/sdn.h"
 
@@ -131,7 +130,7 @@ sdn_ext_insert_srh(sdn_srh_route_t *route)
   for(i = route->length - 1; i > 0; i--) {
     id = route->nodes[i];
     /* Compute hop ipaddr from node id */
-    memcpy(&ipaddr.u8[15], &id, sizeof(sdn_node_id_t));
+    memcpy(&ipaddr.u8[sizeof(uip_ipaddr_t) - sizeof(sdn_node_id_t)], &id, sizeof(sdn_node_id_t));
     // LOG_DBG("INSERT ID is %d, Next Node is [", id);
     // LOG_DBG_6ADDR(&ipaddr);
     // LOG_DBG_("]\n");

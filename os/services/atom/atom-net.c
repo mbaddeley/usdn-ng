@@ -234,7 +234,7 @@ atom_net_node_heartbeat(uip_ipaddr_t *ipaddr)
     node = node_add(ipaddr);
   } else {
     /* Check if this node is associated with this ip address */
-    if(!uip_ipaddr_cmp(&node->ipaddr, &ipaddr)) {
+    if(!uip_ipaddr_cmp(&node->ipaddr, ipaddr)) {
       /* Node does not have this ip address, copy over */
       uip_ipaddr_copy(&node->ipaddr, ipaddr);
     }
@@ -255,7 +255,7 @@ atom_net_node_update(uip_ipaddr_t *ipaddr, uint8_t cfg_id, uint8_t rank)
     node = node_add(ipaddr);
   } else {
     /* Check if this node is associated with this ip address */
-    if(!uip_ipaddr_cmp(&node->ipaddr, &ipaddr)) {
+    if(!uip_ipaddr_cmp(&node->ipaddr, ipaddr)) {
       /* Node does not have this ip address, copy over */
       uip_ipaddr_copy(&node->ipaddr, ipaddr);
     }
