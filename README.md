@@ -1,9 +1,6 @@
 μSDN-NG - Low-Power Wireless SDN for Contiki-NG.
 ===
 
-WARNING - This repo has some issues at compilation that I still have't fixed yet... I recommend you use the original μSDN repo [here](https://github.com/mbaddeley/usdn) unless you know what you are doing with Contiki-NG. 
-===
-
 Intro
 ---
 This repo hosts the source code of μSDN-NG, a Contiki-NG port of the orginal μSDN [here](https://github.com/mbaddeley/usdn) ([paper](https://michaelbaddeley.files.wordpress.com/2019/05/evolving.pdf) | [slides](https://michaelbaddeley.files.wordpress.com/2020/03/netsoft-2018-slides.pdf)). *DISCLAIMER: This port has not been properly tested. However, I'm happy to help out if you have issues!*
@@ -22,7 +19,7 @@ Alongside μSDN itself, we provide an embedded SDN controller, *Atom*, as well a
 
 Please note, this is an academic exercise and a fairly large codebase, so there are many things in μSDN which may not have been done as cleanly or transparently as I may have liked (though I have tried to clean it up somewhat). I've tried to give a brief overview of all the features and modules here, and you can find the paper and slides within at the top level, but if you find yourself getting lost then I'm happy to answer any questions you may have.
 
-Getting Started
+Compiling
 ---
 
 **IMPORTANT** You'll also need to install the 20-bit mspgcc compiler.
@@ -34,14 +31,20 @@ For a pre-compiled version for Ubuntu-64 please click [here](https://github.com/
 Some people have had issues trying to install this compiler, so if you're new to Contiki or Linux in general then I'd recommend doing the following:
 
 - Use a clean Ubuntu64 installation, don't use Instant Contiki. Contiki is included as part of uSDN and it's not necessary to have a separate Contiki repo.
-- Use the precompiled msp430-gcc version above. You literally just need to extract it to a folder of your choice and then add it to your path `export PATH=$PATH:<uri-to-your-mspgcc>`. Once you have done this your path should look something like this:
+- Use the precompiled msp430-gcc version above. You literally just need to extract it to a folder of your choice and then add it to your path in `~/.bashrc`:
+
+```
+export PATH=$PATH:<uri-to-your-mspgcc>
+```
+
+Once you have done this your path should look something like this:
 
 ```
 echo $PATH
 /home/mike/Compilers/mspgcc-.7.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin
 ```
 
-- NB There is only *ONE* msp430-gcc compiler in the path. If there are two you need to remove the old one.
+- NB There should only be *ONE* msp430-gcc compiler in the path. The one you manually installed. *DO NOT INSTALL IT THROUGH APT*. If there are two you need to remove the old one.
 - Check the mspgcc version (`msp430-gcc --version`) it should be 4.7.3.
 
 ```
@@ -50,26 +53,18 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions. There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
-You are now ready move on to the next stage! If you haven't properly set it up to use the 20-bit mspgcc then it will not compile!!!
+You are now ready move on to the next stage! If you haven't properly set it up to use the 20-bit mspgcc then it may not compile for some nodes (I think the Z1 uses this for example, but I might be wrong)!!!
 
-Because of the size of the stack, if you're testing in Cooja you'll need to compile for exp5438 motes (*there is a Makefile.target which should handle this for you*). Please note that you'll need to run make in *both* sdn/controller and sdn/node as I haven't set it up to do both in the higher level directory.
+The available targets I've tested in Cooja for uSDN-NG are:
 
-```
-  cd usdn/examples/sdn/controller/
-  make clean & make
-  cd ..
-  cd node/
-  make clean & make
-```
+- TARGET=cooja
+- TARGET=z1
 
-To get you going you can find some Cooja examples in:
-
- **usdn/examples/sdn/..**
-
-There is a handy compile script in there that can be used to compile both the controller and node:
+You can make the controller and node by manually going into the respective directories, but there is a handy compile script in there that can be used to compile both the controller and node at once for you:
 
 ```
-./compile.sh MULTIFLOW=1 NUM_APPS=1 FLOWIDS=1 TXNODES=8 RXNODES=10 DELAY=0 BRMIN=5 BRMAX=5 NSUFREQ=600 FTLIFETIME=300 FTREFRESH=1 FORCENSU=1 LOG_LEVEL_SDN=LOG_LEVEL_DBG LOG_LEVEL_ATOM=LOG_LEVEL_DBG
+  cd usdn/examples/sdn
+  ./compile.sh TARGET=<your-target> <add-other-your-makeargs-here>
 ```
 
 uSDN Make Args:
@@ -90,9 +85,20 @@ Multiflow Make Args:
 - BRMIN   - Minimum bitrate (seconds)
 - BRMAX   - Maximum bitrate (seconds)
 
-Further Development
+
+e.g.:
+
+```
+./compile.sh TARGET=cooja MULTIFLOW=1 NUM_APPS=1 FLOWIDS=1 TXNODES=8 RXNODES=10 DELAY=0 BRMIN=5 BRMAX=5 NSUFREQ=600 FTLIFETIME=300 FTREFRESH=1 FORCENSU=1 LOG_LEVEL_SDN=LOG_LEVEL_DBG LOG_LEVEL_ATOM=LOG_LEVEL_DBG
+```
+
+Simulation in Cooja
 ---
-Future μSDN development will merge with μSDN-NG, based on the newer (and maintained) Contiki-NG.
+Contiki-NG uses docker for Cooja. To learn how to install docker and run Cooja for NG, please refer to this guide [here](https://github.com/contiki-ng/contiki-ng/wiki/Docker)
+
+Real-Hardware
+---
+Alternatively, you may want to compile for actual hardware. I would recommend using the nRF52840 development kit - which NG [now supports](https://github.com/contiki-ng/contiki-ng/wiki/Platform-nrf52840).
 
 Where is everything?
 ---
@@ -195,9 +201,9 @@ Where is everything?
 - Lots ;) Just ask if you have problems and I'll try to help as best I can.
 
 ---
-[usdn_ng_v1.0] - 07/02/20
+[usdn_ng_v1.0] - 02/03/21
 ---
-- Initial port to NG
+- Initial port to NG. Working on cooja and z1 motes (in cooja).
 
 ---
 [usdn_v1.2] - 19/03/19
@@ -220,4 +226,4 @@ Where is everything?
 ---
 [usdn_v1.0] - 28/06/18
 ---
-- Initial commit. 
+- Initial commit.
