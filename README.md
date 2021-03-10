@@ -19,6 +19,10 @@ Alongside μSDN itself, we provide an embedded SDN controller, *Atom*, as well a
 
 Please note, this is an academic exercise and a fairly large codebase, so there are many things in μSDN which may not have been done as cleanly or transparently as I may have liked (though I have tried to clean it up somewhat). I've tried to give a brief overview of all the features and modules here, and you can find the paper and slides within at the top level, but if you find yourself getting lost then I'm happy to answer any questions you may have.
 
+Install μSDN-NG in the VM
+---
+If you want to skip all the installation parts below and get all the necessary tools in a VM, you can check out this project [here](https://github.com/printfer/usdn_vm).
+
 Compiling
 ---
 
