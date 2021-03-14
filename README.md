@@ -46,8 +46,6 @@ Once you have done this your path should look something like this:
 echo $PATH
 /home/mike/Compilers/mspgcc-.7.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin
 ```
-
-- **N.B.:** There should only be **ONE** msp430-gcc compiler in the path. The one you manually installed. **DO NOT INSTALL IT THROUGH APT-GET**. If there are two you need to remove the old one.
 - Check the mspgcc version (`msp430-gcc --version`) it should be 4.7.3.
 
 ```
@@ -56,9 +54,11 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions. There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
-You are now ready move on to the next stage! If you haven't properly set it up to use the 20-bit mspgcc then it may not compile for some nodes (I think the Z1 uses this for example, but I might be wrong)!!!
+**NB: There should only be *ONE* msp430-gcc compiler in the path. The one you manually installed. *DO NOT INSTALL IT THROUGH APT-GET*. If there are two you need to remove the old one.**
 
-The available targets I've tested in Cooja for uSDN-NG are:
+You are now ready move on to the next stage! If you haven't properly set it up to use the 20-bit mspgcc then it may not compile for some nodes (I think the Z1 uses this for example)!!!
+
+The available targets I've tested in Cooja for uSDN-NG are *cooja* and *z1*. **NB: The *cooja* target can only be compiled within Cooja itself. If you try to compile it through the terminal you'll get an error.**
 
 - TARGET=cooja
 - TARGET=z1
