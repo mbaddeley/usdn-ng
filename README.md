@@ -19,10 +19,12 @@ Alongside μSDN itself, we provide an embedded SDN controller, *Atom*, as well a
 
 Please note, this is an academic exercise and a fairly large codebase, so there are many things in μSDN which may not have been done as cleanly or transparently as I may have liked (though I have tried to clean it up somewhat). I've tried to give a brief overview of all the features and modules here, and you can find the paper and slides within at the top level, but if you find yourself getting lost then I'm happy to answer any questions you may have.
 
-Compiling
+How to Build and Run uSDN-NG
 ---
+**Quick Install** If you want to skip all the installation parts below and get all the necessary tools in a VM, you can check out this project [here](https://github.com/printfer/usdn_vm). *N.B: This is not maintained by uSDN so if there are any issues please contact the maintainer.*
 
-**IMPORTANT** You'll also need to install the 20-bit mspgcc compiler.
+---
+**IMPORTANT** You'll need to install the 20-bit mspgcc compiler.
 
 For instructions on how to compile this please click [here](https://github.com/contiki-os/contiki/wiki/MSP430X)
 
@@ -44,7 +46,7 @@ echo $PATH
 /home/mike/Compilers/mspgcc-.7.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin
 ```
 
-- NB There should only be *ONE* msp430-gcc compiler in the path. The one you manually installed. *DO NOT INSTALL IT THROUGH APT*. If there are two you need to remove the old one.
+- **N.B.:** There should only be **ONE** msp430-gcc compiler in the path. The one you manually installed. **DO NOT INSTALL IT THROUGH APT-GET**. If there are two you need to remove the old one.
 - Check the mspgcc version (`msp430-gcc --version`) it should be 4.7.3.
 
 ```
