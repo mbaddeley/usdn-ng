@@ -21,14 +21,15 @@ Please note, this is an academic exercise and a fairly large codebase, so there 
 
 How to Build and Run uSDN-NG
 ---
-**Quick Install** If you want to skip all the installation parts below and get all the necessary tools in a VM, you can check out this project [here](https://github.com/printfer/usdn_vm). *N.B: This is not maintained by uSDN so if there are any issues please contact the maintainer.*
+
+**QUICK INSTALL:** If you want to skip all the installation parts below and get all the necessary tools in a VM, you can check out this project [here](https://github.com/printfer/usdn_vm). *N.B: This is not maintained by uSDN so if there are any issues please contact the maintainer.*
 
 ---
-**IMPORTANT** You'll need to install the 20-bit mspgcc compiler.
+**MANUAL INSTALL:** Firstly You'll need to install the 20-bit mspgcc compiler.
 
-For instructions on how to compile this please click [here](https://github.com/contiki-os/contiki/wiki/MSP430X)
+ * For instructions on how to compile this please click [here](https://github.com/contiki-os/contiki/wiki/MSP430X)
 
-For a pre-compiled version for Ubuntu-64 please click [here](https://github.com/pksec/msp430-gcc-4.7.3)
+ * For a pre-compiled version for Ubuntu-64 please click [here](https://github.com/pksec/msp430-gcc-4.7.3)
 
 Some people have had issues trying to install this compiler, so if you're new to Contiki or Linux in general then I'd recommend doing the following:
 
@@ -62,12 +63,23 @@ The available targets I've tested in Cooja for uSDN-NG are:
 - TARGET=cooja
 - TARGET=z1
 
-You can make the controller and node by manually going into the respective directories, but there is a handy compile script in there that can be used to compile both the controller and node at once for you:
+You can make the controller and node by manually going into the respective directories...
+
+```
+  cd usdn/examples/sdn/controller
+  make clean TARGET=<your-target> && make TARGET=<your-target> <add-other-your-makeargs-here>
+  cd ../node
+  make clean TARGET=<your-target> && make TARGET=<your-target> <add-other-your-makeargs-here>
+```
+
+...but there is a handy compile script in there that can be used to compile both the controller and node at once for you:
 
 ```
   cd usdn/examples/sdn
   ./compile.sh TARGET=<your-target> <add-other-your-makeargs-here>
 ```
+
+The following make arguements are available:
 
 uSDN Make Args:
 - NSUFREQ - Frequency of node state updates to the controller (seconds)
@@ -87,11 +99,10 @@ Multiflow Make Args:
 - BRMIN   - Minimum bitrate (seconds)
 - BRMAX   - Maximum bitrate (seconds)
 
-
 e.g.:
 
 ```
-./compile.sh TARGET=cooja MULTIFLOW=1 NUM_APPS=1 FLOWIDS=1 TXNODES=8 RXNODES=10 DELAY=0 BRMIN=5 BRMAX=5 NSUFREQ=600 FTLIFETIME=300 FTREFRESH=1 FORCENSU=1 LOG_LEVEL_SDN=LOG_LEVEL_DBG LOG_LEVEL_ATOM=LOG_LEVEL_DBG
+./compile.sh TARGET=z1 MULTIFLOW=1 NUM_APPS=1 FLOWIDS=1 TXNODES=8 RXNODES=10 DELAY=0 BRMIN=5 BRMAX=5 NSUFREQ=600 FTLIFETIME=300 FTREFRESH=1 FORCENSU=1 LOG_LEVEL_SDN=LOG_LEVEL_DBG LOG_LEVEL_ATOM=LOG_LEVEL_DBG
 ```
 
 Simulation in Cooja
