@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (c) 2016, George Oikonomou - http://www.spd.gr
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
@@ -27,34 +28,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/** \addtogroup sensortag-cc1350-peripherals
- * @{
- *
- * \file
- *        LED HAL definitions for the CC1350STK LEDs. Is not compatible with
- *        the CC2650STK.
- * \author
- *        Edvard Pettersen <e.pettersen@ti.com>
+/*---------------------------------------------------------------------------*/
+#include "dev/uart0.h"
+#include "usb/usb-serial.h"
+/*---------------------------------------------------------------------------*/
+#ifndef NRF52840_IO_H_
+#define NRF52840_IO_H_
+/*---------------------------------------------------------------------------*/
+/*
+ * Select whether to use native USB as sensniff's I/O interface.
+ * If defined as 0, UART will be used. Set to 1 to use USB.
  */
+#ifdef NRF52840_IO_CONF_USB
+#define NRF52840_IO_USB NRF52840_IO_CONF_USB
+#else
+#define NRF52840_IO_USB 0
+#endif
 /*---------------------------------------------------------------------------*/
-#ifndef LEDS_ARCH_H_
-#define LEDS_ARCH_H_
+#if NRF52840_IO_USB
+#define sensniff_io_byte_out(b)  usb_serial_writeb(b)
+#define sensniff_io_flush()      usb_serial_flush()
+#define sensniff_io_set_input(f) usb_serial_set_input(f)
+#else
+#define sensniff_io_byte_out(b)  uart0_writeb(b)
+#define sensniff_io_flush()
+#define sensniff_io_set_input(f) uart0_set_input(f)
+#endif /* NRF52840_IO_USB */
 /*---------------------------------------------------------------------------*/
-/**
- * \name LED configurations for the dev/leds.h API.
- *
- * Those values are not meant to be modified by the user
- * @{
- */
-#define LEDS_CONF_COUNT             1
-
-#define LEDS_CONF_RED               0
-
-#define LEDS_CONF_ALL               ((1 << LEDS_CONF_COUNT) - 1)
-/** @} */
+#endif /* NRF52840_IO_H_ */
 /*---------------------------------------------------------------------------*/
-#endif /* LEDS_ARCH_H_ */
-/*---------------------------------------------------------------------------*/
-/**
- * @}
- */

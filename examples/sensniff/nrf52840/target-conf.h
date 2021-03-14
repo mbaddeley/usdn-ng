@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (c) 2016, George Oikonomou - http://www.spd.gr
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
@@ -27,34 +28,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/** \addtogroup sensortag-cc1350-peripherals
- * @{
+/*---------------------------------------------------------------------------*/
+#ifndef TARGET_CONF_H_
+#define TARGET_CONF_H_
+/*---------------------------------------------------------------------------*/
+/*
+ * Selection of Sensniff I/O Interface.
+ * Defaults to UART0 on the DK and USB on the dongle.
+ * Set NRF52840_NATIVE_USB=1 when building to use USB as sensniff's interface.
  *
- * \file
- *        LED HAL definitions for the CC1350STK LEDs. Is not compatible with
- *        the CC2650STK.
- * \author
- *        Edvard Pettersen <e.pettersen@ti.com>
+ * Don't forget to also set a correct baud rate (460800 or higher) by defining
+ * the corresponding UART0_CONF_BAUD_RATE 
  */
+#define NRF52840_IO_CONF_USB       NRF52840_NATIVE_USB
 /*---------------------------------------------------------------------------*/
-#ifndef LEDS_ARCH_H_
-#define LEDS_ARCH_H_
+#if NRF52840_IO_CONF_USB == 0
+#define UART0_CONF_BAUD_RATE       NRF_UART_BAUDRATE_460800
+#endif
 /*---------------------------------------------------------------------------*/
-/**
- * \name LED configurations for the dev/leds.h API.
- *
- * Those values are not meant to be modified by the user
- * @{
- */
-#define LEDS_CONF_COUNT             1
-
-#define LEDS_CONF_RED               0
-
-#define LEDS_CONF_ALL               ((1 << LEDS_CONF_COUNT) - 1)
-/** @} */
+#define SENSNIFF_IO_DRIVER_H "pool/nrf52840-io.h"
 /*---------------------------------------------------------------------------*/
-#endif /* LEDS_ARCH_H_ */
+#endif /* TARGET_CONF_H_ */
 /*---------------------------------------------------------------------------*/
-/**
- * @}
- */
