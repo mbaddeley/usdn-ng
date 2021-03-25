@@ -1,62 +1,103 @@
-μSDN-NG - Low-Power Wireless SDN for Contiki-NG.
-===
+# μSDN-NG - Embedded SDN Stack Low-Power IoT.
 
-Intro
----
-This repo hosts the source code of μSDN-NG, a Contiki-NG port of the orginal μSDN [here](https://github.com/mbaddeley/usdn) ([paper](https://michaelbaddeley.files.wordpress.com/2019/05/evolving.pdf) | [slides](https://michaelbaddeley.files.wordpress.com/2020/03/netsoft-2018-slides.pdf)). *DISCLAIMER: This port has not been properly tested. However, I'm happy to help out if you have issues!*
+## Intro
 
-Publications
----
+This repo hosts the source code of μSDN-NG, a Contiki-NG port of the orginal μSDN [here](https://github.com/mbaddeley/usdn) ([paper](https://michaelbaddeley.files.wordpress.com/2019/05/evolving.pdf) | [slides](https://michaelbaddeley.files.wordpress.com/2020/03/netsoft-2018-slides.pdf)).
+
+## Publications
+
 [M. Baddeley, R. Nejabati, G. Oikonomou, M. Sooriyabandara, and D. Simeonidou, “Evolving SDN  for Low-Power IoT Networks,” in 2018 IEEE Conference on Network Softwarization (NetSoft), June 2018.](https://michaelbaddeley.files.wordpress.com/2019/05/evolving.pdf)
 
 [M. Baddeley, R. Nejabati, G. Oikonomou, S. Gormus, M. Sooriyabandara and D. Simeonidou, "Isolating SDN control traffic with layer-2 slicing in 6TiSCH industrial IoT networks," 2017 IEEE Conference on Network Function Virtualization and Software Defined Networks (NFV-SDN), Berlin, 2017, pp. 247-251.](https://michaelbaddeley.files.wordpress.com/2019/05/isolating.pdf)
 
-About
----
+## About
+
 μSDN is has been developed to provide an open source platform to deliver SDN on 6LoWPAN IEEE 802.15.4-2012 networks. The version here is currently not compatible with TSCH, though we have previously tried it out with our own 6TiSCH implementation for Contiki (check out the NFV-SDN 2017 paper [here](https://michaelbaddeley.files.wordpress.com/2019/05/isolating.pdf)).
 
 Alongside μSDN itself, we provide an embedded SDN controller, *Atom*, as well as a flow generator for testing purposes, *Multiflow*.
 
 Please note, this is an academic exercise and a fairly large codebase, so there are many things in μSDN which may not have been done as cleanly or transparently as I may have liked (though I have tried to clean it up somewhat). I've tried to give a brief overview of all the features and modules here, and you can find the paper and slides within at the top level, but if you find yourself getting lost then I'm happy to answer any questions you may have.
 
-How to Build and Run uSDN-NG
----
+## Virtual Machine Install
 
-**QUICK INSTALL:** If you want to skip all the installation parts below and get all the necessary tools in a VM, you can check out this project [here](https://github.com/printfer/usdn_vm). *N.B: This is not maintained by uSDN so if there are any issues please contact the maintainer.*
+If you are unfamiliar with Linux and embedded compilers, I recommend you install uSDN-NG onto a Virtual Machine. This can be done from Windows, Linux, or Mac. If you follow the instructions below, Vagrant will automatically set up a VirtualBox Ubuntu image for you, as well as automatically provisioning all required packages and tools. These instructions are taken from the [Contiki-NG Wiki](https://github.com/contiki-ng/contiki-ng/wiki/Vagrant) on how to set up Vagrant. If you wish to do things like set up USB ports on your image, please refer to that page.
 
----
-**MANUAL INSTALL:** Firstly You'll need to install the 20-bit mspgcc compiler.
+**N.B. This process will take a LONG time. Although the VirtualBox VM will automatically pop up, DO NOT do anything in that VM window during the install process.**
 
- * For instructions on how to compile this please click [here](https://github.com/contiki-os/contiki/wiki/MSP430X)
+### Instructions
 
- * For a pre-compiled version for Ubuntu-64 please click [here](https://github.com/pksec/msp430-gcc-4.7.3)
-
-Some people have had issues trying to install this compiler, so if you're new to Contiki or Linux in general then I'd recommend doing the following:
-
-- Use a clean Ubuntu64 installation, don't use Instant Contiki. Contiki is included as part of uSDN and it's not necessary to have a separate Contiki repo.
-- Use the precompiled msp430-gcc version above. You literally just need to extract it to a folder of your choice and then add it to your path in `~/.bashrc`:
-
+* Install a virtualization platform such as [VirtualBox](https://www.virtualbox.org)
+* Install Vagrant from [www.vagrantup.com/downloads](https://www.vagrantup.com/downloads.html)
+* Open a terminal (e.g. [git bash](https://gitforwindows.org/) in Windows).
+* Get the uSDN-NG repository
+```bash
+$ sudo apt-get install git
+$ git clone https://github.com/mbaddeley/usdn-ng.git
 ```
-export PATH=$PATH:<uri-to-your-mspgcc>
+* Initialize Vagrant image
+```bash
+$ cd contiki-ng/tools/vagrant
+$ vagrant up
 ```
 
-Once you have done this your path should look something like this:
+* Log in to the Vagrant image
+```bash
+$ vagrant ssh
+```
+* In case of a Windows host, you may have to convert line endings of the bootstrap.sh script. From the Vagrant shell:
+```bash
+$ sudo apt update
+$ sudo apt install dos2unix
+$ dos2unix contiki-ng/tools/vagrant/bootstrap.sh
+```
+* Install Contiki-NG toolchain. From the Vagrant shell:
+```bash
+$ sudo ./contiki-ng/tools/vagrant/bootstrap.sh
+```
+* Exit the SSH session
+```bash
+$ exit
+```
 
+* Restart the vagrant image.
+```bash
+$ vagrant reload
 ```
-echo $PATH
-/home/mike/Compilers/mspgcc-.7.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin
-```
-- Check the mspgcc version (`msp430-gcc --version`) it should be 4.7.3.
 
+* Log in to the Vagrant image again and install the VM GUI.
+```bash
+$ vagrant ssh
+$ sudo ./contiki-ng/tools/vagrant/bootstrap-vbox-with-x.sh
+$ exit
+$ vagrant reload
 ```
-msp430-gcc (GCC) 4.7.3 20130411 (mspgcc dev 20120911)
-Copyright (C) 2012 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions. There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-```
-**NB: There should only be *ONE* msp430-gcc compiler in the path. The one you manually installed. *DO NOT INSTALL IT THROUGH APT-GET*. If there are two you need to remove the old one.**
 
-You are now ready move on to the next stage! If you haven't properly set it up to use the 20-bit mspgcc then it may not compile for some nodes (I think the Z1 uses this for example)!!!
+This will install VirtualBox guest additions, X and the Xfce desktop environment.
+
+* Login using username 'vagrant' and password 'vagrant'
+* Run `sudo startx`.
+* This will start the desktop environment. You should now see the VM's desktop environment. You can start cooja by opening a terminal and typing the following.
+```bash
+$ contiker cooja
+```
+
+If this is the first time opening docker, it will need to pull the image from ther server. This may take a few minutes. Once it's finished you should now see Cooja up and running!
+
+## Native Linux Install
+
+Alternatively, you can install all the native toolchains on a Linux/Mac. This will make things like compilation and development MUCH faster. If you know your way around Linux, and you want a proper development environment, then this is the way to go. Instructions on how to do this can be found on the Contiki-NG Wiki:
+
+- [Native toolchain installation (Linux)](https://github.com/contiki-ng/contiki-ng/wiki/Toolchain-installation-on-Linux)
+- [Native toolchain installation (macOS)](https://github.com/contiki-ng/contiki-ng/wiki/Toolchain-installation-on-macOS)
+
+I'd recommend installing the following, which will allow you to test Z1 and Cooja motes (in cooja), and compile nRF52840 motes using real-world hardware...
+
+- [Docker (for Cooja)](https://github.com/contiki-ng/contiki-ng/wiki/Docker)
+- [Contiki-NG development tools](https://github.com/contiki-ng/contiki-ng/wiki/Toolchain-installation-on-Linux#install-development-tools-for-contiki-ng)
+- [msp430-gcc compiler (for Z1 motes)](https://github.com/contiki-ng/contiki-ng/wiki/Toolchain-installation-on-Linux#install-msp430-compiler)
+- [nRF52840 support](https://github.com/contiki-ng/contiki-ng/wiki/Platform-nrf52840)
+
+## How to Compile
 
 The available targets I've tested in Cooja for uSDN-NG are *cooja* and *z1*. **NB: The *cooja* target can only be compiled within Cooja itself. If you try to compile it through the terminal you'll get an error.**
 
@@ -105,31 +146,8 @@ e.g.:
 ./compile.sh TARGET=z1 MULTIFLOW=1 NUM_APPS=1 FLOWIDS=1 TXNODES=8 RXNODES=10 DELAY=0 BRMIN=5 BRMAX=5 NSUFREQ=600 FTLIFETIME=300 FTREFRESH=1 FORCENSU=1 LOG_LEVEL_SDN=LOG_LEVEL_DBG LOG_LEVEL_ATOM=LOG_LEVEL_DBG
 ```
 
-Simulation in Cooja
----
-Contiki-NG uses docker for Cooja. To learn how to install docker and run Cooja for NG, please refer to this guide [here](https://github.com/contiki-ng/contiki-ng/wiki/Docker).
+## Where is everything?
 
-*Important:* Rather than cloning vanilla Contiki-NG (as it asks you to) you will clone uSDN-NG i.e.:
-
-```
-$ git clone https://github.com/mbaddeley/usdn-ng.git
-$ cd usdn-ng
-$ git submodule update --init --recursive
-```
-
-and in your `~/.bashrc`
-
-```
-export USDN_PATH=<absolute-path-to-your-usdn-ng>
-alias usdner="docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 --mount type=bind,source=$USDN_PATH,destination=/home/user/contiki-ng -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v /dev/bus/usb:/dev/bus/usb -ti contiker/contiki-ng"
-```
-
-Real-Hardware
----
-Alternatively, you may want to compile for actual hardware. I would recommend using the nRF52840 development kit - which NG [now supports](https://github.com/contiki-ng/contiki-ng/wiki/Platform-nrf52840).
-
-Where is everything?
----
 - Core: */core/net/sdn/*
 - Stack: */core/net/sdn/usdn/*
 - Atom: */apps/atom/*
@@ -147,6 +165,7 @@ Where is everything?
 - Control packet buffer.
 
 ### Core
+
 - sdn.c
 
   Main SDN process.
@@ -222,11 +241,19 @@ Where is everything?
   Join/association applications.
 
 ### Still to be Implemented...
+
 - Perform multiple flowtable entries on packets
 
 ### Known Issues
+
 - Shortest Path Routing doesn't work well with larger network sizes (30+), use RPL-NS routing in this case! This is because it takes too long to compute all the possible paths on the central atom controller, and there are no checks to queue additional requests while it's computing.
 - Lots ;) Just ask if you have problems and I'll try to help as best I can.
+
+
+---
+[usdn_ng_v1.1] - 25/03/21
+---
+- Fixed vagrant image to allow easy install
 
 ---
 [usdn_ng_v1.0] - 02/03/21
