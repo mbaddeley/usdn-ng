@@ -38,49 +38,14 @@ $ git clone https://github.com/mbaddeley/usdn-ng.git
 $ cd contiki-ng/tools/vagrant
 $ vagrant up
 ```
-
-* Log in to the Vagrant image
-```bash
-$ vagrant ssh
-```
-* In case of a Windows host, you may have to convert line endings of the bootstrap.sh script. From the Vagrant shell:
-```bash
-$ sudo apt update
-$ sudo apt install dos2unix
-$ dos2unix contiki-ng/tools/vagrant/bootstrap.sh
-```
-* Install Contiki-NG toolchain. From the Vagrant shell:
-```bash
-$ sudo ./contiki-ng/tools/vagrant/bootstrap.sh
-```
-* Exit the SSH session
-```bash
-$ exit
-```
-
-* Restart the vagrant image.
-```bash
-$ vagrant reload
-```
-
-* Log in to the Vagrant image again and install the VM GUI.
-```bash
-$ vagrant ssh
-$ sudo ./contiki-ng/tools/vagrant/bootstrap-vbox-with-x.sh
-$ exit
-$ vagrant reload
-```
-
-This will install VirtualBox guest additions, X and the Xfce desktop environment.
-
-* Login using username 'vagrant' and password 'vagrant'
-* Run `sudo startx`.
-* This will start the desktop environment. You should now see the VM's desktop environment. You can start cooja by opening a terminal and typing the following.
+* After the initialization finished, the VM will automatically restart.
+* The first time you open the VM, you need to login using the username 'vagrant' and password 'vagrant'. And if there is a pop-up to ask you to do the release upgrade, DO NOT do that! The script haven't test on a higher ubuntu version.
+* You should now see the VM's desktop environment. You can start Cooja by opening a terminal and typing the following.
 ```bash
 $ contiker cooja
 ```
 
-If this is the first time opening docker, it will need to pull the image from ther server. This may take a few minutes. Once it's finished you should now see Cooja up and running!
+If this is the first time opening docker, it will need to pull the image from their server. This may take a few minutes. Once it's finished you should now see Cooja up and running!
 
 ## Native Linux Install
 
