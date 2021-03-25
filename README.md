@@ -26,6 +26,8 @@ If you are unfamiliar with Linux and embedded compilers, I recommend you install
 
 ### Instructions
 
+see more details [here](tools/vagrant/README.md)
+
 * Install a virtualization platform such as [VirtualBox](https://www.virtualbox.org)
 * Install Vagrant from [www.vagrantup.com/downloads](https://www.vagrantup.com/downloads.html)
 * Make sure git is installed, then open a terminal (e.g. `sudo apt install git` in Linux or [git bash](https://gitforwindows.org/) in Windows).
