@@ -28,10 +28,9 @@ If you are unfamiliar with Linux and embedded compilers, I recommend you install
 
 * Install a virtualization platform such as [VirtualBox](https://www.virtualbox.org)
 * Install Vagrant from [www.vagrantup.com/downloads](https://www.vagrantup.com/downloads.html)
-* Open a terminal (e.g. [git bash](https://gitforwindows.org/) in Windows).
+* Make sure git is installed, then open a terminal (e.g. `sudo apt install git` in Linux or [git bash](https://gitforwindows.org/) in Windows).
 * Get the uSDN-NG repository
 ```bash
-$ sudo apt-get install git
 $ git clone https://github.com/mbaddeley/usdn-ng.git
 ```
 * Initialize Vagrant image
