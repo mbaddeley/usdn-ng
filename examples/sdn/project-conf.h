@@ -6,13 +6,13 @@
 #include CONTROLLER_CONF_PATH
 #endif /* CONTROLLER_CONF_PATH */
 
-#define LOG_CONF_WITH_ANNOTATE              0
+#define LOG_CONF_WITH_ANNOTATE              1
 
 /*---------------------------------------------------------------------------*/
 /* !!! THERE ARE ALSO SOME CONFIGUARTION OPTIONS IN atom-conf.h WHICH SHOULD BE
    INSPECTED BEFORE TRYING TO RUN THIS APPLICATION !!! */
 /*---------------------------------------------------------------------------*/
-#define ATOM_CONF_MAX_NODES                 20
+#define ATOM_CONF_MAX_NODES                 50
 
 /*---------------------------------------------------------------------------*/
 /* Reduce uSDN size for SKY */
@@ -71,7 +71,7 @@
 #define UIP_CONF_TCP                        0
 
 #define UIP_CONF_UDP_CONNS                  2
-#define NBR_TABLE_CONF_MAX_NEIGHBORS        4
+#define NBR_TABLE_CONF_MAX_NEIGHBORS        8
 #define UIP_CONF_MAX_ROUTES                 0  /* No need for node routes */
 
 /*---------------------------------------------------------------------------*/
