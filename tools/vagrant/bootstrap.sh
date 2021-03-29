@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xe
+
 # Init contiki submodules
 cd contiki-ng
 git submodule update --init --recursive
@@ -20,7 +22,7 @@ sudo apt install -y --no-install-recommends \
 sudo apt-get clean
 sudo python2 -m pip install intelhex sphinx_rtd_theme sphinx
 
-Install ARM toolchain
+# Install ARM toolchain
 wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
 tar -xjf gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2 -C /tmp/
 sudo cp -f -r /tmp/gcc-arm-none-eabi-10-2020-q4-major/* /usr/local/
@@ -68,7 +70,7 @@ echo "export WORKDIR=${HOME}" >> ${HOME}/.bashrc
 source ${HOME}/.bashrc
 
 # Create Cooja shortcut
-echo "#!/bin/bash\nant -Dbasedir=${COOJA} -f ${COOJA}/build.xml run" > ${HOME}/cooja && chmod +x ${HOME}/cooja
+# echo "#!/bin/bash\nant -Dbasedir=${COOJA} -f ${COOJA}/build.xml run" >> ${HOME}/cooja && chmod +x ${HOME}/cooja
 
 # Docker
 # sudo apt update
@@ -87,5 +89,7 @@ sudo sh get-docker.sh
 sudo usermod -aG docker vagrant
 
 # Docker image "Contiker" alias
-echo 'alias contiker="sudo xhost +; docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 --mount type=bind,source=$CONTIKI_NG,destination=/home/user/contiki-ng -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v /dev/bus/usb:/dev/bus/usb -ti contiker/contiki-ng"' >> /home/vagrant/.bashrc
+echo 'alias contiker="docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 --mount type=bind,source=$CONTIKI_NG,destination=/home/user/contiki-ng -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v /dev/bus/usb:/dev/bus/usb -ti contiker/contiki-ng"' >> /home/vagrant/.bashrc
 source ${HOME}/.bashrc
+
+sudo reboot
