@@ -381,5 +381,7 @@ struct atom_sb sb_usdn = {
   init,
   in,
   out,
-  ATOM_APP_MATRIX_USDN
+  NULL,
+  &app_route_sp,
+  NULL
 };

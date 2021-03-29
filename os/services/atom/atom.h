@@ -118,7 +118,7 @@ typedef struct atom_node {
   uint8_t          rank;          /* rank of the node */
   /* Neighbors */
   uint8_t          num_links;
-  atom_link_t      links[ATOM_MAX_LINKS_PER_NODE];
+  atom_link_t      links[NBR_TABLE_CONF_MAX_NEIGHBORS];
 } atom_node_t;
 
 /* Network Layer API */
@@ -218,8 +218,9 @@ struct atom_sb {
   void             (* init)(void);
   atom_action_t *  (* in)(void);
   void             (* out)(atom_action_t *action, atom_response_t *response);
-  /* App lists for each action. This needs to mirror the action enum! */
-  atom_app_ptr_t   app_matrix[][NUM_ATOM_ACTIONS];
+  atom_app_ptr_t   netupdate_app;
+  atom_app_ptr_t   routing_app;
+  atom_app_ptr_t   join_app;
 };
 
 /* Concrete southbound connectors */
