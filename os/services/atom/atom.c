@@ -78,28 +78,6 @@ PROCESS(controller_process, "SDN Controller Process\n");
 /*---------------------------------------------------------------------------*/
 /* Private functions */
 /*---------------------------------------------------------------------------*/
-static atom_app_ptr_t *
-get_apps(atom_app_ptr_t matrix[][NUM_ATOM_ACTIONS], atom_action_t *action)
-{
-  if(matrix[action->type][0] != NULL)
-    return matrix[action->type];
-  else
-    return NULL;
-}
-
-/*---------------------------------------------------------------------------*/
-static uint8_t
-get_num_apps(atom_app_ptr_t matrix[][NUM_ATOM_ACTIONS], atom_action_t *action)
-{
-  int i = 0;
-  atom_app_ptr_t *apps = get_apps(matrix, action);
-  while(apps[i] != NULL) {
-    i++;
-  }
-  return i;
-}
-
-/*---------------------------------------------------------------------------*/
 static void
 do_net_update(atom_action_t *action, void *data)
 {
@@ -251,8 +229,6 @@ atom_set_handshake_timer(sdn_tmr_state_t state,
 void
 atom_run(struct atom_sb *sb)
 {
-  int i;
-
   /* Set initial response to null */
   atom_response_t *response = NULL;
   /* Get the action from the sb */
@@ -263,30 +239,35 @@ atom_run(struct atom_sb *sb)
   if(action != NULL) {
     /* Get the apps for that action */
     LOG_DBG("Get %s applications\n", ACTION_STRING(action->type));
-    atom_app_ptr_t *apps = get_apps(sb->app_matrix, action);
+    atom_app_ptr_t app;
+    switch(action->type)
+    {
+      case ATOM_ACTION_NETUPDATE:
+        app = sb->netupdate_app;
+        break;
+      case ATOM_ACTION_ROUTING:
+        app = sb->routing_app;
+        break;
+      case ATOM_ACTION_JOIN:
+        app = sb->join_app;
+        break;
+      default:
+        LOG_DBG("Unknown action %u type!!!", action->type);
+        break;
+    }
 
     /* Check we actally have some apps to run */
-    if(apps != NULL) {
-      uint8_t n_apps = get_num_apps(sb->app_matrix, action);
-      LOG_DBG("There are %d applications\n", n_apps);
-      /* Run the apps and get the response */
-      for(i = 0; i < n_apps; i++) {
-        /* Check to see if we are running the right action on the right app type */
-        LOG_DBG("Trying to run app %s\n", apps[i]->name);
-        if(action->type == apps[i]->action_type) {
-          response = apps[i]->run(action->data);
+    if(app != NULL) {
+      /* Check to see if we are running the right action on the right app type */
+      LOG_DBG("Trying to run app %s\n", app->name);
+      if(action->type == app->action_type) {
+        response = app->run(action->data);
 
-          // TODO: Configurable logic so we can play around with what app outputs
+      } else {
+        LOG_WARN("Action type [%s] not handled by APP [%s])\n",
+                 ACTION_STRING(action->type),
+                 ACTION_STRING(app->action_type));
 
-          if(response != NULL) {
-            // Break on first successful result
-            break;
-          }
-        } else {
-          LOG_WARN("Action type [%s] not handled by APP [%s])\n",
-                   ACTION_STRING(action->type),
-                   ACTION_STRING(apps[i]->action_type));
-        }
       }
       /* Send response to sb */
       if(response != NULL) {

@@ -158,5 +158,7 @@ struct atom_sb sb_rpl = {
   init,
   in,
   out,
-  ATOM_APP_MATRIX_RPL
+  NULL,
+  NULL,
+  &app_join_cfg
 };
