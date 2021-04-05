@@ -17,13 +17,13 @@ $ git clone https://github.com/mbaddeley/usdn-ng.git
 Initialize Vagrant image:
 
 ```bash
-$ cd contiki-ng/tools/vagrant
+$ cd usdn-ng/tools/vagrant
 $ vagrant up
 ```
 
 ## Usage
 
-After the initialization finished, the VM will automatically restart.
+After the initialization finished, the VM will automatically shutdown. Please restart it again manually using `vagrant up`.
 
 The first time you open the VM, you need to login using the username 'vagrant' and password 'vagrant'. And if there is a pop-up to ask you to do the release upgrade, DO NOT do that! The script haven't test on a higher ubuntu version.
 
