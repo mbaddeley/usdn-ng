@@ -1,5 +1,10 @@
 # μSDN-NG - Embedded SDN Stack Low-Power IoT.
 
+# WARNING: This repo is currently unstable. Please use the old [uSDN](https://github.com/mbaddeley/usdn) with exp5438 motes for a stable version.
+
+- **You can only have about 20 *Cooja motes types* before cooja crashes.**
+- **The *Z1 mote type* cashes cooja when deploying a sdn-controller.c mote. This is likely a memory issue caused by the different compiler.**
+
 ## Intro
 
 This repo hosts the source code of μSDN-NG, a Contiki-NG port of the orginal μSDN [here](https://github.com/mbaddeley/usdn) ([paper](https://michaelbaddeley.files.wordpress.com/2019/05/evolving.pdf) | [slides](https://michaelbaddeley.files.wordpress.com/2020/03/netsoft-2018-slides.pdf)).
